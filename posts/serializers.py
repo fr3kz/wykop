@@ -10,18 +10,28 @@ class PostsSerializer(ModelSerializer):
 
     def create(self,validated_data):
 
-        user = User.objects.get(id=validated_data['posted_by'])
-        
         post = Post(
             title=validated_data['title'],
             header=validated_data['header'],
             body=validated_data['body'],
-            posted_by=user,
-            slug=validated_data['title']
+            posted_by=validated_data['posted_by'],
         )
         post.save()
 
         return post
 
-    def update():
-        pass
+    def update(self,post,validated_data):
+
+        title = validated_data['title']
+        header = validated_data['header']
+        body = validated_data['body']
+        posted_by = validated_data['posted_by']
+
+        post.title = title
+        post.header = header
+        post.body = body
+        post.posted_by = posted_by
+        
+        post.save()
+        
+        return post

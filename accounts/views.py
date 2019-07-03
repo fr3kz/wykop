@@ -4,6 +4,7 @@ from rest_framework.permissions import (IsAuthenticated)
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import User
 from django.contrib import auth
+from .serializer import UserSerializer
 
 class SignIn(APIView):
 
@@ -44,4 +45,12 @@ class SignUp(APIView):
                 'user_id': usr.id
                 })
         else:
-            return Response({'error': ' nick jest zajety'})    
+            return Response({'error': ' nick jest zajety'})
+
+class Users(APIView):
+
+    def get(self,request,format=None):
+        users = User.objects.all()
+        serializer = UserSerializer(users,many=True)
+
+        return Response({'users':serializer.data})
