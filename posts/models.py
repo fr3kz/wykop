@@ -22,6 +22,14 @@ class Post(models.Model):
         ordering = ['-published']
 
 class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    pass
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
+    body = models.TextField(default="")
+    author = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
 
+class Likes(models.Model):
+    post = models.ForeignKey(Post,on_delete=models.CASCADE, related_name="likesmodel")
+    user = models.ForeignKey(User,on_delete=models.CASCADE, related_name="likers")
+
+class Dislikes(models.Model):
+    post = models.ForeignKey(Post,on_delete=models.CASCADE, related_name="dislikesmodel")
+    user = models.ForeignKey(User,on_delete=models.CASCADE, related_name="dislikers")

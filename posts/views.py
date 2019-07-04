@@ -1,13 +1,16 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import (PostsSerializer)
-from .models import Post
+from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated
+from .serializers import (PostsSerializer,CommentSerializer)
+from .models import (Post,Comment,Likes,Dislikes)
 
 class Posts(APIView):
 
-    def get(self,request,format=None):
+    permission_classes = (IsAuthenticated,)
 
+    def get(self,request,format=None):
         posts = Post.objects.all()
         serializer = PostsSerializer(posts, many=True)
 
@@ -31,7 +34,7 @@ class Posts(APIView):
 
     def put(self,request,format=None):
         post = Post.objects.get(id=request.data['id'])
-        print(post)
+
         serializer = PostsSerializer(post,data=request.data)
 
         if serializer.is_valid():
@@ -51,3 +54,53 @@ class Posts(APIView):
 
         return Response({'message':'post zostal usuniety'})
 
+@api_view(['POST'])
+def like_post(request,post_id,format=None):
+
+    permission_classes = (IsAuthenticated,)
+
+    if request.method == 'POST':
+        post = Post.objects.get(id=post_id)
+        user = request.user
+
+        if Likes.objects.filter(post=post,user=user).exists():
+            return Response({'message': 'juz polubiles'})
+        post.likes += 1
+        post.save() 
+
+        likes = Likes(post=post,user=user).save()
+   
+        return Response({'message':'Polajkowales'})
+
+@api_view(['POST'])
+def dislike_post(request,post_id,format=None):
+
+    permission_classes = (IsAuthenticated,)
+
+    if request.method == 'POST':
+        post = Post.objects.get(id=post_id)
+        user = request.user
+
+        if Dislikes.objects.filter(post=post,user=user).exists():
+            return Response({'message': 'juz  zminusowales'})
+
+        if Likes.objects.filter(post=post,user=user).exists():
+            return Response({'message': 'obecnie lubisz to'})    
+        post.dislikes += 1
+        post.save() 
+
+        likes = Dislikes(post=post,user=user).save()
+   
+        return Response({'message':'Zminusowales'})    
+
+class Comments(APIView):
+
+    permission_classes = (IsAuthenticated,)
+
+    def get(self,request,post_id,format=None):
+        post = Post.objects.get(id=post_id)
+        comments = Comment.objects.filter(post=post)
+        serializer = CommentSerializer(comments,many=True)
+
+
+        return Response(serializer.data)
