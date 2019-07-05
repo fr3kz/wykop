@@ -3,7 +3,6 @@ from .models import (Post,Comment)
 from django.contrib.auth.models import User
 
 class PostsSerializer(ModelSerializer):
-
     class Meta:
         model = Post
         fields = '__all__'
@@ -40,4 +39,18 @@ class CommentSerializer(ModelSerializer):
     class Meta:
         model = Comment
         fields = "__all__"
-        
+
+    def create(self,validated_data):
+        comment = Comment(post=validated_data['post'],body=validated_data['body'],author=validated_data['author'])
+        comment.save()
+
+        return comment
+
+    def update(self,comment,validated_data):
+        comment.post = validated_data['post']
+        comment.body = validated_data['body']
+        comment.author = validated_data['author']
+
+        comment.save()
+
+        return comment

@@ -102,5 +102,37 @@ class Comments(APIView):
         comments = Comment.objects.filter(post=post)
         serializer = CommentSerializer(comments,many=True)
 
-
         return Response(serializer.data)
+
+    def post(self,request,post_id,format=None):
+        serializer = CommentSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response({'message':'dodano komentarz'})
+        else:
+             return Response({'message':serializer.errors})
+
+class CommentDetail(APIView):
+
+    permission_classes = (IsAuthenticated,)
+
+    def put(self,request,post_id,comment_id,format=None):
+        post = Post.objects.get(id=post_id)
+        comments = Comment.objects.get(id=comment_id)
+
+        serializer = CommentSerializer(comments,data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response({'message': 'zaktualizowano komentarz'})
+        else:
+            return Response({'message': serializer.errors})
+
+    def delete(self,request,post_id,comment_id):
+        comments = Comment.objects.get(id=comment_id).delete()
+
+        return Response({'message':'usunieto'})
+    
