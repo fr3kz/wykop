@@ -11,7 +11,7 @@ class Post(models.Model):
     dislikes = models.IntegerField(default=0)
     strike = models.BooleanField(default=False)
     published = models.DateTimeField(default=datetime.now)
-
+    image = models.ImageField(upload_to="images/", blank=True,null=True)
     def __str__(self):
         return self.title
 

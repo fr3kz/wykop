@@ -16,13 +16,13 @@ class SignIn(APIView):
         user = auth.authenticate(request,username=username, password=password)
 
         if user is not None:
-           refresh = RefreshToken.for_user(user)
+            refresh = RefreshToken.for_user(user)
 
-           context = {
-               'access': str(refresh.access_token)
-           }
-
-           return Response(context)
+            return Response({
+                'access': str(refresh.access_token),
+                'user_id':user.id,
+                'username':user.username
+            })
            
         return Response({'error':'Zle dane'})
 

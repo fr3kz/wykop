@@ -14,6 +14,7 @@ class PostsSerializer(ModelSerializer):
             header=validated_data['header'],
             body=validated_data['body'],
             posted_by=validated_data['posted_by'],
+            image=validated_data['image']
         )
         post.save()
 
