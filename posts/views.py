@@ -28,7 +28,7 @@ class Posts(APIView):
             })
 
         else:
-            return Response({'error':'brak wszystkich pol'})
+            return Response({'error':serializer.errors})
 
     def put(self,request,format=None):
         post = Post.objects.get(id=request.data['id'])
